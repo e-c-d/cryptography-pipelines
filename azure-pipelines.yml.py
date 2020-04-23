@@ -22,12 +22,12 @@ def define_conda_jobs():
         "64",
     ]
     OPENSSL = {
-        "1_0": ">=1.0,<1.1",
-        # "1_1": ">=1.1,<1.2",
+        # "1_0": ">=1.0,<1.1",
+        "1_1": ">=1.1,<1.2",
     }
     BUILD_TYPE = [
-        "Debug", # debug mode, disable optimization
-        # "RelWithDebInfo", # release mode but keep debugging symbols
+        # "Debug", # debug mode, disable optimization
+        "RelWithDebInfo", # release mode but keep debugging symbols
     ]
     # fmt: on
 
