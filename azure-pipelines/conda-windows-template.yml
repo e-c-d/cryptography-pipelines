@@ -44,7 +44,7 @@ jobs:
           Write-Host "##vso[task.setvariable variable=CONDA_FORCE_32BIT]1"
 
   - script: |
-      conda create --yes --quiet --name python=${{ parameters.python_version }} chihiro
+      conda create --yes --quiet --name chihiro python=${{ parameters.python_version }}
     displayName: Create Anaconda environment
 
   - script: |
