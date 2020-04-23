@@ -73,8 +73,7 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
-      contents: "dist/"
+      sourceFolder: '$(Build.SourcesDirectory)/dist'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
       flattenFolders: true
     displayName: Copy files to artifact staging directory
