@@ -57,18 +57,37 @@ jobs:
   #     cmake -LA || cd .
   #   displayName: List compile options
 
+  - powershell: |
+      Invoke-WebRequest -OutFile "openssl.tar.gz" -Uri "https://www.openssl.org/source/openssl-1.1.1g.tar.gz"
+    displayName: Download OpenSSL
+
+  - task: ExtractFiles@1
+    inputs:
+      archiveFilePatterns: 'openssl.tar.gz'
+      destinationFolder: 'tmp-ssl/'
+      cleanDestinationFolder: true
+
+  # build openssl
+  - script: |
+      ren tmp-ssl\openssl-* openssl
+      move tmp-ssl\openssl .
+      cd openssl
+
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars${{ parameters.arch }}.bat"
+
+      perl Configure no-comp no-shared VC-WIN64A
+      nmake
+
+    displayName: Build OpenSSL
+
   - script: |
       call activate chihiro
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars${{ parameters.arch }}.bat"
       set CC=cl.exe
       set CXX=cl.exe
-      set LIB=%CONDA%\Library\lib;%LIB%
-      set INCLUDE=%CONDA%\Library\include;%INCLUDE%
-      rem This is absolutely evil. We temporarily rename libssl.dll out of the way
-      rem so that the compiler links against it statically. Disgusting.
-      ren %CONDA%\Library\bin\libssl.dll libssl.txt
+      set LIB=openssl;%LIB%
+      set INCLUDE=openssl\include;%INCLUDE%
       python setup.py sdist bdist_wheel
-      ren %CONDA%\Library\bin\libssl.txt libssl.dll
     displayName: Build package
 
   - script: |
