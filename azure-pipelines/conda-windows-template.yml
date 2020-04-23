@@ -43,14 +43,14 @@ jobs:
       - powershell: |
           Write-Host "##vso[task.setvariable variable=CONDA_FORCE_32BIT]1"
 
-  - script: |
-      conda create --yes --quiet --name chihiro python=${{ parameters.python_version }}
-    displayName: Create Anaconda environment
+  # - script: |
+  #     conda create --yes --quiet --name chihiro python=${{ parameters.python_version }}
+  #   displayName: Create Anaconda environment
 
-  - script: |
-      call activate chihiro
-      conda install --yes --quiet --name chihiro openssl"${{ parameters.openssl_version }}" zlib pytest
-    displayName: Install Anaconda packages
+  # - script: |
+  #     call activate chihiro
+  #     conda install --yes --quiet --name chihiro openssl"${{ parameters.openssl_version }}" zlib pytest
+  #   displayName: Install Anaconda packages
 
   # - script: |
   #     call activate chihiro
@@ -64,13 +64,19 @@ jobs:
   - task: ExtractFiles@1
     inputs:
       archiveFilePatterns: 'openssl.tar.gz'
-      destinationFolder: 'tmp-ssl/'
+      destinationFolder: 'tmp-ssl'
       cleanDestinationFolder: true
+
+  - powershell: |
+      Move-Item -Path tmp-ssl\openssl* -Destination openssl
+    displayName: Rename extracted OpenSSL
+
+  - script: |
+      dir /a-D /S /B .
+    displayName: List files
 
   # build openssl
   - script: |
-      ren tmp-ssl\openssl-* openssl
-      move tmp-ssl\openssl .
       cd openssl
 
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars${{ parameters.arch }}.bat"
