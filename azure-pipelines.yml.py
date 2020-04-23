@@ -18,7 +18,7 @@ yaml.add_representer(
 def define_conda_jobs():
     # fmt: off
     ARCH = [
-        # "32",
+        "32",
         "64",
     ]
     OPENSSL = {
@@ -27,7 +27,7 @@ def define_conda_jobs():
     }
     PYTHON = {
         "3_6": "3.6",
-        # "3_7": "3.7",
+        "3_7": "3.7",
         # "3_8": "3.8",
     }
     BUILD_TYPE = [
