@@ -64,7 +64,11 @@ jobs:
       set CXX=cl.exe
       set LIB=%CONDA%\Library\lib;%LIB%
       set INCLUDE=%CONDA%\Library\include;%INCLUDE%
+      rem This is absolutely evil. We temporarily rename libssl.dll out of the way
+      rem so that the compiler links against it statically. Disgusting.
+      ren %CONDA%\Library\bin\libssl.dll libssl.txt
       python setup.py sdist bdist_wheel
+      ren %CONDA%\Library\bin\libssl.txt libssl.dll
     displayName: Build package
 
   - script: |

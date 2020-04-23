@@ -27,8 +27,8 @@ def define_conda_jobs():
     }
     PYTHON = {
         "3_6": "3.6",
-        "3_7": "3.7",
-        "3_8": "3.8",
+        # "3_7": "3.7",
+        # "3_8": "3.8",
     }
     BUILD_TYPE = [
         # "Debug", # debug mode, disable optimization
