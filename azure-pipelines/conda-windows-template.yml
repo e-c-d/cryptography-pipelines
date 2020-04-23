@@ -43,14 +43,14 @@ jobs:
       - powershell: |
           Write-Host "##vso[task.setvariable variable=CONDA_FORCE_32BIT]1"
 
-  # - script: |
-  #     conda create --yes --quiet --name chihiro python=${{ parameters.python_version }}
-  #   displayName: Create Anaconda environment
+  - script: |
+      conda create --yes --quiet --name chihiro python=${{ parameters.python_version }}
+    displayName: Create Anaconda environment
 
-  # - script: |
-  #     call activate chihiro
-  #     conda install --yes --quiet --name chihiro openssl"${{ parameters.openssl_version }}" zlib pytest
-  #   displayName: Install Anaconda packages
+  - script: |
+      call activate chihiro
+      conda install --yes --quiet --name chihiro openssl"${{ parameters.openssl_version }}" zlib pytest nasm
+    displayName: Install Anaconda packages
 
   # - script: |
   #     call activate chihiro
@@ -58,7 +58,16 @@ jobs:
   #   displayName: List compile options
 
   - powershell: |
-      Invoke-WebRequest -OutFile "openssl.tar.gz" -Uri "https://www.openssl.org/source/openssl-1.1.1g.tar.gz"
+      $sha256 = "DDB04774F1E32F0C49751E21B67216AC87852CEB056B75209AF2443400636D46"
+      $url = "https://www.openssl.org/source/openssl-1.1.1g.tar.gz"
+      Invoke-WebRequest -OutFile "openssl.tar.gz.tmp" -Uri "$url"
+
+      if ((Get-FileHash "openssl.tar.gz.tmp" -Algorithm SHA256).Hash -eq $sha256) {
+         Rename-Item "openssl.tar.gz.tmp" "openssl.tar.gz"
+      } else {
+         "Hash check failed" | Write-Debug
+         Exit 1
+      }
     displayName: Download OpenSSL
 
   - task: ExtractFiles@1
@@ -75,15 +84,15 @@ jobs:
       dir /a-D /S /B .
     displayName: List files
 
-  # build openssl
+  # Note: the conda environment is needed for nasm
   - script: |
+      call activate chihiro
       cd openssl
 
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars${{ parameters.arch }}.bat"
 
       perl Configure no-comp no-shared VC-WIN64A
       nmake
-
     displayName: Build OpenSSL
 
   - script: |
