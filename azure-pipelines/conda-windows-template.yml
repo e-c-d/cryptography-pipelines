@@ -68,6 +68,13 @@ jobs:
          "Hash check failed" | Write-Debug
          Exit 1
       }
+
+      if ("${{ parameters.arch }}" -eq "32") {
+        Write-Host "##vso[task.setvariable variable=openssl_target]VC-WIN32"
+      }
+      if ("${{ parameters.arch }}" -eq "64") {
+        Write-Host "##vso[task.setvariable variable=openssl_target]VC-WIN64A"
+      }
     displayName: Download OpenSSL
 
   - task: ExtractFiles@1
@@ -91,7 +98,7 @@ jobs:
 
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars${{ parameters.arch }}.bat"
 
-      perl Configure no-comp no-shared VC-WIN64A
+      perl Configure no-comp no-shared no-tests %openssl_target%
       nmake
     displayName: Build OpenSSL
 
