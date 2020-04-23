@@ -13,14 +13,21 @@ parameters:
 - name: openssl_version
   type: string
   default: ">=1.1,<1.2"
+- name: python_version_name
+  type: string
+  default: "3_6"
+- name: python_version
+  type: string
+  default: "3.6"
 
 jobs:
 - job:
   variables:
     buildname: "cryptography-conda-ssl${{ parameters.openssl_version_name }}-\
-      win${{ parameters.arch }}-${{ parameters.build_type }}"
+      win${{ parameters.arch }}-py${{ parameters.python_version_name }}-${{ parameters.build_type }}"
   displayName: "Build python-cryptography \
     with OpenSSL ${{ parameters.openssl_version_name }} \
+    for Python ${{ parameters.python_version_name }}, \
     for architecture ${{ parameters.arch }}, \
     build type ${{ parameters.build_type }}"
   pool:
@@ -37,7 +44,7 @@ jobs:
           Write-Host "##vso[task.setvariable variable=CONDA_FORCE_32BIT]1"
 
   - script: |
-      conda create --yes --quiet --name chihiro
+      conda create --yes --quiet --name python=${{ parameters.python_version }} chihiro
     displayName: Create Anaconda environment
 
   - script: |

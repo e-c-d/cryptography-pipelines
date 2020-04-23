@@ -4,6 +4,24 @@ jobs:
 - template: azure-pipelines/conda-windows-template.yml
   parameters:
     arch: '64'
-    build_type: Debug
+    build_type: RelWithDebInfo
     openssl_version: '>=1.1,<1.2'
     openssl_version_name: '1_1'
+    python_version: '3.6'
+    python_version_name: '3_6'
+- template: azure-pipelines/conda-windows-template.yml
+  parameters:
+    arch: '64'
+    build_type: RelWithDebInfo
+    openssl_version: '>=1.1,<1.2'
+    openssl_version_name: '1_1'
+    python_version: '3.7'
+    python_version_name: '3_7'
+- template: azure-pipelines/conda-windows-template.yml
+  parameters:
+    arch: '64'
+    build_type: RelWithDebInfo
+    openssl_version: '>=1.1,<1.2'
+    openssl_version_name: '1_1'
+    python_version: '3.8'
+    python_version_name: '3_8'

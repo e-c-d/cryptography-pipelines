@@ -25,21 +25,33 @@ def define_conda_jobs():
         # "1_0": ">=1.0,<1.1",
         "1_1": ">=1.1,<1.2",
     }
+    PYTHON = {
+        "3_6": "3.6",
+        "3_7": "3.7",
+        "3_8": "3.8",
+    }
     BUILD_TYPE = [
         # "Debug", # debug mode, disable optimization
         "RelWithDebInfo", # release mode but keep debugging symbols
     ]
     # fmt: on
 
-    for arch, (ssl_name, ssl_version), build_type in itertools.product(
-        ARCH, OPENSSL.items(), BUILD_TYPE
+    for (
+        arch,
+        (ssl_name, ssl_ver),
+        (py_name, py_ver),
+        build_type,
+    ) in itertools.product(
+        ARCH, OPENSSL.items(), PYTHON.items(), BUILD_TYPE
     ):
         yield odict(
             template="azure-pipelines/conda-windows-template.yml",
             parameters=dict(
                 arch=arch,
                 openssl_version_name=ssl_name,
-                openssl_version=ssl_version,
+                openssl_version=ssl_ver,
+                python_version_name=py_name,
+                python_version=py_ver,
                 build_type=build_type,
             ),
         )
