@@ -49,7 +49,7 @@ jobs:
 
   - script: |
       call activate chihiro
-      conda install --yes --quiet --name chihiro openssl"${{ parameters.openssl_version }}" zlib pytest nasm
+      conda install --yes --quiet --name chihiro openssl"${{ parameters.openssl_version }}" zlib pytest nasm cffi
     displayName: Install Anaconda packages
 
   # - script: |
@@ -82,14 +82,11 @@ jobs:
       archiveFilePatterns: 'openssl.tar.gz'
       destinationFolder: 'tmp-ssl'
       cleanDestinationFolder: true
+    displayName: Extract OpenSSL
 
   - powershell: |
       Move-Item -Path tmp-ssl\openssl* -Destination openssl
     displayName: Rename extracted OpenSSL
-
-  - script: |
-      dir /a-D /S /B .
-    displayName: List files
 
   # Note: the conda environment is needed for nasm
   - script: |
@@ -102,6 +99,8 @@ jobs:
       nmake
     displayName: Build OpenSSL
 
+    # Note: the http_proxy/https_proxy variables are to inhibit
+    # downloading of missing packages from PyPI.
   - script: |
       call activate chihiro
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars${{ parameters.arch }}.bat"
@@ -109,6 +108,8 @@ jobs:
       set CXX=cl.exe
       set LIB=openssl;%LIB%
       set INCLUDE=openssl\include;%INCLUDE%
+      set http_proxy=http://127.0.0.1:9/
+      set https_proxy=https://127.0.0.1:9/
       python setup.py bdist_wheel
     displayName: Build package
 
@@ -128,10 +129,3 @@ jobs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: "$(buildname)"
     displayName: Publish build artifacts
-
-  # - powershell: |
-  #     . $Env:CONDAPS1
-  #     conda activate chihiro
-  #     New-Item -Name build -ItemType directory
-  #     cmake -G "NMake Makefiles" -B build -DCMAKE_BUILD_TYPE=Release
-  #     cmake --build build
