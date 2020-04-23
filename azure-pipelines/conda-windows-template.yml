@@ -55,6 +55,8 @@ jobs:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars${{ parameters.arch }}.bat"
       set CC=cl.exe
       set CXX=cl.exe
+      set LIB=%CONDA%\Library\lib;%LIB%
+      set INCLUDE=%CONDA%\Library\include;%INCLUDE%
       python setup.py sdist bdist_wheel
     displayName: Build package
 
